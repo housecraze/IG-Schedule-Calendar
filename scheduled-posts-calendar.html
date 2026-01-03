@@ -1,0 +1,1270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scheduled Posts Calendar</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1a2e 50%, #16213e 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #fff;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: rgba(26, 26, 46, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 20px;
+            border: 2px solid rgba(0, 255, 255, 0.2);
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.1), 0 10px 40px rgba(0,0,0,0.3);
+            margin-bottom: 30px;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        h1 {
+            background: linear-gradient(45deg, #00ffff, #ff00ff, #00ffff);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradient-shift 3s ease infinite;
+            font-size: 32px;
+            font-weight: 800;
+            text-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+        }
+
+        @keyframes gradient-shift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .settings-btn {
+            background: linear-gradient(135deg, #00ffff, #00cccc);
+            color: #0a0e27;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .settings-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.8), 0 5px 20px rgba(0, 255, 255, 0.3);
+        }
+
+        .load-section {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        select {
+            flex: 1;
+            min-width: 250px;
+            padding: 14px 18px;
+            border: 2px solid rgba(255, 0, 255, 0.3);
+            border-radius: 12px;
+            font-size: 14px;
+            background: rgba(26, 26, 46, 0.9);
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 0 15px rgba(255, 0, 255, 0.2);
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #ff00ff;
+            box-shadow: 0 0 25px rgba(255, 0, 255, 0.5);
+        }
+
+        select option {
+            background: #1a1a2e;
+            color: #fff;
+        }
+
+        button {
+            padding: 14px 28px;
+            background: linear-gradient(135deg, #ff00ff, #cc00cc);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            white-space: nowrap;
+        }
+
+        button:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 0 30px rgba(255, 0, 255, 0.8), 0 5px 20px rgba(255, 0, 255, 0.3);
+        }
+
+        button:disabled {
+            background: #444;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            opacity: 0.5;
+        }
+
+        button.success {
+            background: linear-gradient(135deg, #00ff88, #00cc66);
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+        }
+
+        button.success:hover {
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.8), 0 5px 20px rgba(0, 255, 136, 0.3);
+        }
+
+        button.danger {
+            background: linear-gradient(135deg, #ff0066, #cc0055);
+            box-shadow: 0 0 20px rgba(255, 0, 102, 0.5);
+        }
+
+        button.danger:hover {
+            box-shadow: 0 0 30px rgba(255, 0, 102, 0.8), 0 5px 20px rgba(255, 0, 102, 0.3);
+        }
+
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(26, 26, 46, 0.6);
+            padding: 15px 20px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 15px;
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.1);
+        }
+
+        .status-info {
+            font-size: 13px;
+            color: #00ffff;
+        }
+
+        .status-info strong {
+            color: #ff00ff;
+        }
+
+        .auto-refresh-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .auto-refresh-controls label {
+            font-size: 13px;
+            color: #00ffff;
+        }
+
+        .auto-refresh-controls input[type="number"] {
+            width: 80px;
+            min-width: 80px;
+            padding: 8px;
+            font-size: 13px;
+            background: rgba(26, 26, 46, 0.9);
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            border-radius: 8px;
+            color: #fff;
+        }
+
+        .auto-refresh-controls input[type="number"]:focus {
+            outline: none;
+            border-color: #00ffff;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px;
+            background: rgba(26, 26, 46, 0.8);
+            border-radius: 20px;
+            border: 2px solid rgba(255, 0, 255, 0.3);
+            box-shadow: 0 0 30px rgba(255, 0, 255, 0.2);
+        }
+
+        .spinner {
+            border: 4px solid rgba(255, 0, 255, 0.2);
+            border-top: 4px solid #ff00ff;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+            box-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Calendar Styles */
+        .calendar-container {
+            background: rgba(26, 26, 46, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            border: 2px solid rgba(255, 0, 255, 0.2);
+            box-shadow: 0 0 30px rgba(255, 0, 255, 0.1), 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid rgba(0, 255, 255, 0.2);
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .calendar-title {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradient-shift 3s ease infinite;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 15px;
+        }
+
+        .day-header {
+            text-align: center;
+            font-weight: 700;
+            color: #00ffff;
+            padding: 10px;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+
+        .calendar-day {
+            background: rgba(26, 26, 46, 0.6);
+            border-radius: 15px;
+            padding: 15px;
+            min-height: 120px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .calendar-day.empty {
+            opacity: 0.3;
+        }
+
+        .calendar-day.has-post {
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.1), rgba(255, 0, 255, 0.1));
+            border-color: rgba(255, 0, 255, 0.5);
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(255, 0, 255, 0.3);
+        }
+
+        .calendar-day.has-post:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 35px rgba(255, 0, 255, 0.6), 0 10px 30px rgba(0, 255, 255, 0.3);
+            border-color: #ff00ff;
+        }
+
+        .day-number {
+            font-weight: 700;
+            color: #888;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .calendar-day.has-post .day-number {
+            background: linear-gradient(135deg, #00ffff, #ff00ff);
+            color: #0a0e27;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 16px;
+            font-weight: 800;
+            box-shadow: 0 0 20px rgba(255, 0, 255, 0.6);
+        }
+
+        .day-content {
+            font-size: 12px;
+            color: #00ffff;
+        }
+
+        .day-indicator {
+            display: inline-block;
+            background: linear-gradient(135deg, #ff00ff, #00ffff);
+            color: #0a0e27;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            box-shadow: 0 0 15px rgba(255, 0, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 14, 39, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, rgba(26, 26, 46, 0.95), rgba(22, 33, 62, 0.95));
+            border-radius: 25px;
+            padding: 40px;
+            max-width: 700px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 0 50px rgba(255, 0, 255, 0.4), 0 20px 60px rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(255, 0, 255, 0.3);
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #ff0066, #cc0055);
+            color: white;
+            border: none;
+            min-width: 45px;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            font-size: 28px;
+            line-height: 1;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            font-weight: 300;
+            box-shadow: 0 0 20px rgba(255, 0, 102, 0.5);
+            padding: 0;
+        }
+
+        .modal-close:hover {
+            transform: rotate(90deg) scale(1.1);
+            box-shadow: 0 0 35px rgba(255, 0, 102, 0.8);
+            background: linear-gradient(135deg, #ff0088, #ff0055);
+        }
+
+        .modal-date {
+            background: linear-gradient(135deg, #00ffff, #ff00ff);
+            color: #0a0e27;
+            padding: 15px 25px;
+            border-radius: 15px;
+            font-weight: 800;
+            font-size: 22px;
+            margin-bottom: 30px;
+            display: inline-block;
+            box-shadow: 0 0 25px rgba(255, 0, 255, 0.5);
+        }
+
+        .modal-section {
+            margin-bottom: 30px;
+        }
+
+        .modal-label {
+            font-weight: 700;
+            color: #00ffff;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+
+        .modal-content-box {
+            background: rgba(26, 26, 46, 0.8);
+            padding: 18px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            color: #fff;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.1);
+        }
+
+        .link-box {
+            background: rgba(0, 255, 255, 0.1);
+            padding: 18px;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            border: 1px solid rgba(0, 255, 255, 0.3);
+        }
+
+        .link-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #00ffff, #00cccc);
+            color: #0a0e27;
+            padding: 14px 28px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 700;
+            transition: all 0.3s;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .link-button:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 0 35px rgba(0, 255, 255, 0.8);
+        }
+
+        .copy-btn {
+            background: linear-gradient(135deg, #00ff88, #00cc66);
+            color: #0a0e27;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .copy-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.8);
+        }
+
+        .copy-btn.copied {
+            background: linear-gradient(135deg, #ff00ff, #cc00cc);
+            box-shadow: 0 0 25px rgba(255, 0, 255, 0.6);
+        }
+
+        /* Settings Modal */
+        .settings-modal input {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            border-radius: 12px;
+            font-size: 14px;
+            background: rgba(26, 26, 46, 0.9);
+            color: #fff;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+        }
+
+        .settings-modal input:focus {
+            outline: none;
+            border-color: #00ffff;
+            box-shadow: 0 0 25px rgba(0, 255, 255, 0.4);
+        }
+
+        .settings-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .settings-actions button {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-state h2 {
+            color: #ff00ff;
+            margin-bottom: 15px;
+            font-size: 28px;
+            text-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
+        }
+
+        .empty-state p {
+            color: #00ffff;
+            font-size: 16px;
+        }
+
+        .error {
+            background: rgba(255, 0, 102, 0.2);
+            color: #ff6699;
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 15px;
+            border: 2px solid rgba(255, 0, 102, 0.4);
+            box-shadow: 0 0 20px rgba(255, 0, 102, 0.2);
+        }
+
+        .success-msg {
+            background: rgba(0, 255, 136, 0.2);
+            color: #00ff88;
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 15px;
+            border: 2px solid rgba(0, 255, 136, 0.4);
+            box-shadow: 0 0 20px rgba(0, 255, 136, 0.2);
+        }
+
+        #sheetSelector {
+            margin-top: 15px;
+        }
+
+        .refresh-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .refresh-indicator.active {
+            background: #00ff88;
+            box-shadow: 0 0 10px #00ff88;
+            animation: pulse 2s infinite;
+        }
+
+        .refresh-indicator.paused {
+            background: #ffaa00;
+            box-shadow: 0 0 10px #ffaa00;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; box-shadow: 0 0 10px #00ff88; }
+            50% { opacity: 0.4; box-shadow: 0 0 20px #00ff88; }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .calendar-grid {
+                grid-template-columns: repeat(7, 1fr);
+                gap: 12px;
+            }
+
+            .calendar-day {
+                min-height: 100px;
+                padding: 12px;
+            }
+
+            .day-content {
+                font-size: 11px;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .calendar-grid {
+                grid-template-columns: repeat(7, 1fr);
+                gap: 10px;
+            }
+
+            .calendar-day {
+                min-height: 90px;
+                padding: 10px;
+            }
+
+            .day-number {
+                font-size: 16px;
+            }
+
+            .calendar-day.has-post .day-number {
+                width: 35px;
+                height: 35px;
+                font-size: 14px;
+            }
+
+            .day-indicator {
+                font-size: 8px;
+                padding: 3px 6px;
+            }
+
+            .day-content {
+                font-size: 10px;
+            }
+
+            .calendar-title {
+                font-size: 24px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .header {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .calendar-container {
+                padding: 20px;
+            }
+
+            .calendar-grid {
+                grid-template-columns: repeat(7, 1fr);
+                gap: 8px;
+            }
+
+            .day-header {
+                font-size: 11px;
+                padding: 6px 2px;
+            }
+
+            .calendar-day {
+                min-height: 70px;
+                padding: 8px;
+            }
+
+            .day-number {
+                font-size: 14px;
+            }
+
+            .calendar-day.has-post .day-number {
+                width: 28px;
+                height: 28px;
+                font-size: 12px;
+            }
+
+            .day-indicator {
+                font-size: 7px;
+                padding: 2px 4px;
+            }
+
+            .day-content {
+                font-size: 9px;
+            }
+
+            .modal-content {
+                padding: 25px;
+            }
+
+            .modal-date {
+                font-size: 18px;
+                padding: 12px 20px;
+            }
+
+            .settings-actions {
+                flex-direction: column;
+            }
+
+            .settings-actions button {
+                width: 100%;
+            }
+
+            button {
+                padding: 12px 20px;
+                font-size: 13px;
+            }
+
+            .status-bar {
+                padding: 12px 15px;
+            }
+
+            .auto-refresh-controls {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .calendar-grid {
+                grid-template-columns: repeat(7, 1fr);
+                gap: 6px;
+            }
+
+            .day-header {
+                font-size: 10px;
+                padding: 5px 1px;
+            }
+
+            .calendar-day {
+                min-height: 60px;
+                padding: 6px;
+                border-radius: 10px;
+            }
+
+            .day-number {
+                font-size: 12px;
+                margin-bottom: 4px;
+            }
+
+            .calendar-day.has-post .day-number {
+                width: 24px;
+                height: 24px;
+                font-size: 11px;
+            }
+
+            .day-indicator {
+                display: none;
+            }
+
+            .day-content {
+                font-size: 8px;
+            }
+
+            h1 {
+                font-size: 20px;
+            }
+
+            .calendar-title {
+                font-size: 20px;
+            }
+
+            .load-section {
+                flex-direction: column;
+            }
+
+            .load-section button,
+            .load-section select {
+                width: 100%;
+            }
+
+            select {
+                min-width: 100%;
+            }
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(26, 26, 46, 0.5);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #00ffff, #ff00ff);
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #00cccc, #cc00cc);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-top">
+                <h1>📅 Scheduled Posts Calendar</h1>
+                <button class="settings-btn" onclick="openSettings()">⚙️ Settings</button>
+            </div>
+
+            <div class="load-section">
+                <button onclick="loadSheetsList()">📋 Load Sheets</button>
+            </div>
+
+            <div id="sheetSelector" style="display: none;">
+                <div class="load-section">
+                    <select id="sheetDropdown">
+                        <option value="">Select a sheet...</option>
+                    </select>
+                    <button onclick="loadPosts()">🔄 Load Posts</button>
+                </div>
+            </div>
+
+            <div class="status-bar" id="statusBar" style="display: none;">
+                <div class="status-info">
+                    <span class="refresh-indicator" id="refreshIndicator"></span>
+                    <strong>Last Updated:</strong> <span id="lastUpdate">Never</span> | 
+                    <strong>Posts:</strong> <span id="postCount">0</span> |
+                    <strong>Sheet:</strong> <span id="currentSheet">-</span>
+                </div>
+                <div class="auto-refresh-controls">
+                    <label>Auto-refresh every</label>
+                    <input type="number" id="refreshInterval" min="10" max="300" value="30">
+                    <label>seconds</label>
+                    <button id="refreshToggle" onclick="toggleAutoRefresh()">▶️ Start</button>
+                    <button onclick="loadPosts()" class="success">🔄 Refresh Now</button>
+                </div>
+            </div>
+
+            <div id="error"></div>
+        </div>
+
+        <div id="content"></div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal settings-modal" id="settingsModal" onclick="closeSettings(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeSettings()">×</button>
+            <div class="modal-date">⚙️ API Settings</div>
+            
+            <div class="modal-section">
+                <div class="modal-label">Google Apps Script Web App URL</div>
+                <input 
+                    type="text" 
+                    id="apiUrl" 
+                    placeholder="https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec"
+                >
+            </div>
+
+            <div class="settings-actions">
+                <button onclick="saveApiUrl()">💾 Save</button>
+                <button onclick="testApiConnection()" class="success">🔗 Test Connection</button>
+            </div>
+
+            <div id="apiStatus"></div>
+        </div>
+    </div>
+
+    <!-- Post Details Modal -->
+    <div class="modal" id="postModal" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeModal()">×</button>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <script>
+        let apiUrl = localStorage.getItem('apiUrl') || '';
+        let autoRefreshInterval = null;
+        let isRefreshing = false;
+        let currentSheetName = '';
+        let postsData = [];
+        let postsByDay = {};
+
+        document.getElementById('apiUrl').value = apiUrl;
+
+        function openSettings() {
+            document.getElementById('settingsModal').classList.add('active');
+        }
+
+        function closeSettings(event) {
+            if (!event || event.target.id === 'settingsModal') {
+                document.getElementById('settingsModal').classList.remove('active');
+            }
+        }
+
+        function saveApiUrl() {
+            const url = document.getElementById('apiUrl').value.trim();
+            const errorDiv = document.getElementById('apiStatus');
+            
+            if (!url) {
+                errorDiv.innerHTML = '<div class="error">Please enter an API URL</div>';
+                return;
+            }
+
+            apiUrl = url;
+            localStorage.setItem('apiUrl', url);
+            errorDiv.innerHTML = '<div class="success-msg">✅ API URL saved successfully!</div>';
+            
+            setTimeout(() => {
+                errorDiv.innerHTML = '';
+            }, 3000);
+        }
+
+        async function testApiConnection() {
+            const errorDiv = document.getElementById('apiStatus');
+            
+            if (!apiUrl) {
+                errorDiv.innerHTML = '<div class="error">Please save an API URL first</div>';
+                return;
+            }
+
+            errorDiv.innerHTML = '<div style="color: #00ffff;">Testing connection...</div>';
+
+            try {
+                const response = await fetch(`${apiUrl}?action=listSheets`);
+                const data = await response.json();
+
+                if (data.success) {
+                    errorDiv.innerHTML = `<div class="success-msg">✅ Connection successful! Found ${data.sheets.length} sheet(s)</div>`;
+                } else {
+                    errorDiv.innerHTML = `<div class="error">❌ API Error: ${data.error}</div>`;
+                }
+            } catch (error) {
+                errorDiv.innerHTML = `<div class="error">❌ Connection failed: ${error.message}</div>`;
+            }
+        }
+
+        async function loadSheetsList() {
+            const errorDiv = document.getElementById('error');
+            const selectorDiv = document.getElementById('sheetSelector');
+            const dropdown = document.getElementById('sheetDropdown');
+            
+            errorDiv.innerHTML = '';
+
+            if (!apiUrl) {
+                errorDiv.innerHTML = '<div class="error">Please configure your API URL in Settings first</div>';
+                return;
+            }
+
+            try {
+                const response = await fetch(`${apiUrl}?action=listSheets`);
+                const data = await response.json();
+
+                if (!data.success) {
+                    throw new Error(data.error || 'Failed to load sheets');
+                }
+
+                dropdown.innerHTML = '<option value="">Select a sheet...</option>';
+                data.sheets.forEach(sheet => {
+                    const option = document.createElement('option');
+                    option.value = sheet;
+                    option.textContent = sheet;
+                    dropdown.appendChild(option);
+                });
+
+                selectorDiv.style.display = 'block';
+                errorDiv.innerHTML = '<div class="success-msg">✅ Loaded ' + data.sheets.length + ' sheet(s)</div>';
+                
+                setTimeout(() => {
+                    errorDiv.innerHTML = '';
+                }, 3000);
+
+            } catch (error) {
+                errorDiv.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+            }
+        }
+
+        function parseDayNumber(dateText) {
+            const match = dateText.match(/(\d+)/);
+            if (match) {
+                return parseInt(match[1]);
+            }
+            if (!isNaN(dateText)) {
+                return parseInt(dateText);
+            }
+            return null;
+        }
+
+        async function loadPosts(silent = false) {
+            const errorDiv = document.getElementById('error');
+            const contentDiv = document.getElementById('content');
+            const dropdown = document.getElementById('sheetDropdown');
+            const sheetName = dropdown.value;
+            
+            if (!silent) errorDiv.innerHTML = '';
+
+            if (!apiUrl) {
+                errorDiv.innerHTML = '<div class="error">Please configure your API URL first</div>';
+                return;
+            }
+
+            if (!sheetName) {
+                errorDiv.innerHTML = '<div class="error">Please select a sheet</div>';
+                return;
+            }
+
+            currentSheetName = sheetName;
+
+            if (!silent) {
+                contentDiv.innerHTML = `
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p style="color: #00ffff; font-size: 18px;">Loading posts from "${sheetName}"...</p>
+                    </div>
+                `;
+            }
+
+            try {
+                const response = await fetch(`${apiUrl}?action=getPosts&sheet=${encodeURIComponent(sheetName)}`);
+                const data = await response.json();
+
+                if (!data.success) {
+                    throw new Error(data.error || 'Failed to load posts');
+                }
+
+                postsData = data.posts;
+                
+                postsByDay = {};
+                data.posts.forEach(post => {
+                    const dayNum = parseDayNumber(post.date);
+                    if (dayNum) {
+                        postsByDay[dayNum] = post;
+                    }
+                });
+
+                displayCalendar(data.posts, data.sheetName);
+                updateStatusBar(data.posts.length, data.sheetName, data.timestamp);
+
+                if (!silent) {
+                    document.getElementById('statusBar').style.display = 'flex';
+                }
+
+            } catch (error) {
+                if (!silent) {
+                    contentDiv.innerHTML = '';
+                    errorDiv.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+                }
+            }
+        }
+
+        function displayCalendar(posts) {
+            const contentDiv = document.getElementById('content');
+
+            if (posts.length === 0) {
+                contentDiv.innerHTML = `
+                    <div class="calendar-container">
+                        <div class="empty-state">
+                            <h2>No posts found</h2>
+                            <p>This sheet doesn't have any scheduled posts yet</p>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            let maxDay = 31;
+            const days = Object.keys(postsByDay).map(d => parseInt(d));
+            if (days.length > 0) {
+                maxDay = Math.max(...days, 31);
+            }
+
+            let calendarHTML = `
+                <div class="calendar-container">
+                    <div class="calendar-header">
+                        <div class="calendar-title">📅 Scheduled Posts</div>
+                        <div style="color: #00ffff; font-size: 16px; text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);">${posts.length} post(s) scheduled</div>
+                    </div>
+                    <div class="calendar-grid">
+            `;
+
+            const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            dayHeaders.forEach(day => {
+                calendarHTML += `<div class="day-header">${day}</div>`;
+            });
+
+            for (let day = 1; day <= maxDay; day++) {
+                const post = postsByDay[day];
+                const hasPost = !!post;
+                const hasContent = hasPost && (post.link || post.caption || post.location);
+                
+                calendarHTML += `
+                    <div class="calendar-day ${hasContent ? 'has-post' : 'empty'}" ${hasContent ? `onclick="openPost(${day})"` : ''}>
+                        <div class="day-number">${day}</div>
+                        ${hasContent ? '<div class="day-indicator">📌 Scheduled</div>' : ''}
+                        ${hasContent ? `
+                            <div class="day-content">
+                                ${post.link ? '🔗 Link<br>' : ''}
+                                ${post.caption ? '✍️ Caption<br>' : ''}
+                                ${post.location ? '📍 Location' : ''}
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }
+
+            calendarHTML += `
+                    </div>
+                </div>
+            `;
+
+            contentDiv.innerHTML = calendarHTML;
+        }
+
+        function openPost(dayNum) {
+            const post = postsByDay[dayNum];
+            if (!post) return;
+
+            let modalHTML = `
+                <div class="modal-date">Day ${dayNum} - ${escapeHtml(post.date)}</div>
+            `;
+
+            if (post.link) {
+                modalHTML += `
+                    <div class="modal-section">
+                        <div class="modal-label">🔗 Link</div>
+                        <div class="link-box">
+                            <a href="${escapeHtml(post.link)}" target="_blank" rel="noopener noreferrer" class="link-button">
+                                🔗 Open Link
+                            </a>
+                        </div>
+                    </div>
+                `;
+            }
+
+            if (post.caption) {
+                modalHTML += `
+                    <div class="modal-section">
+                        <div class="modal-label">✍️ Caption</div>
+                        <div class="modal-content-box" id="caption-text">${escapeHtml(post.caption)}</div>
+                        <button class="copy-btn" onclick="copyText('caption-text', this)">📋 Copy Caption</button>
+                    </div>
+                `;
+            }
+
+            if (post.location) {
+                modalHTML += `
+                    <div class="modal-section">
+                        <div class="modal-label">📍 Location</div>
+                        <div class="modal-content-box" id="location-text">${escapeHtml(post.location)}</div>
+                        <button class="copy-btn" onclick="copyText('location-text', this)">📋 Copy Location</button>
+                    </div>
+                `;
+            }
+
+            document.getElementById('modalContent').innerHTML = modalHTML;
+            document.getElementById('postModal').classList.add('active');
+        }
+
+        function closeModal(event) {
+            if (!event || event.target.id === 'postModal') {
+                document.getElementById('postModal').classList.remove('active');
+            }
+        }
+
+        async function copyText(elementId, button) {
+            const element = document.getElementById(elementId);
+            const text = element.textContent;
+            
+            try {
+                await navigator.clipboard.writeText(text);
+                
+                const originalText = button.textContent;
+                button.textContent = '✅ Copied!';
+                button.classList.add('copied');
+                
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.classList.remove('copied');
+                }, 2000);
+                
+            } catch (err) {
+                alert('Failed to copy to clipboard. Please try again.');
+            }
+        }
+
+        function updateStatusBar(count, sheet, timestamp) {
+            document.getElementById('postCount').textContent = count;
+            document.getElementById('currentSheet').textContent = sheet;
+            const date = new Date(timestamp);
+            document.getElementById('lastUpdate').textContent = date.toLocaleTimeString();
+        }
+
+        function toggleAutoRefresh() {
+            const button = document.getElementById('refreshToggle');
+            const indicator = document.getElementById('refreshIndicator');
+
+            if (isRefreshing) {
+                clearInterval(autoRefreshInterval);
+                isRefreshing = false;
+                button.textContent = '▶️ Start';
+                button.classList.remove('danger');
+                indicator.classList.remove('active');
+                indicator.classList.add('paused');
+            } else {
+                const interval = parseInt(document.getElementById('refreshInterval').value) * 1000;
+                
+                if (interval < 10000) {
+                    alert('Refresh interval must be at least 10 seconds');
+                    return;
+                }
+
+                if (!currentSheetName) {
+                    alert('Please load posts first before enabling auto-refresh');
+                    return;
+                }
+
+                autoRefreshInterval = setInterval(() => {
+                    loadPosts(true);
+                }, interval);
+
+                isRefreshing = true;
+                button.textContent = '⏸️ Pause';
+                button.classList.add('danger');
+                indicator.classList.remove('paused');
+                indicator.classList.add('active');
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden && isRefreshing) {
+                toggleAutoRefresh();
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal();
+                closeSettings();
+            }
+        });
+    </script>
+</body>
+</html>
